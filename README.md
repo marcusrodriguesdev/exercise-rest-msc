@@ -7,4 +7,5 @@
  - Tecnologia e Ferramentas:
    - NodeJs
    - Express
-   - MySQL
+   - MongoDb
+   - Eslint
