@@ -22,6 +22,30 @@ const createProduct = async (name, quantity) => {
   return { id: product.id, ...product };
 };
 
+const findAllProducts = async () => {
+  const products = await Model.findAllProducts();
+
+  return products;
+};
+
+const findProductById = async (id) => {
+  const product = await Model.findProductById(id);
+
+  if (!product) {
+    return {
+      isValid: false,
+      err: {
+        code: 'invalid_data',
+        message: 'Wrong id format',
+      },
+    };
+  }
+
+  return product;
+};
+
 module.exports = {
   createProduct,
+  findAllProducts,
+  findProductById,
 };
