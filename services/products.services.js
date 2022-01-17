@@ -44,8 +44,30 @@ const findProductById = async (id) => {
   return product;
 };
 
+const updateProduct = async (id, name, quantity) => {
+  const validName = Middlewares.validationName(name);
+  const validQuantity = Middlewares.validationQuantity(quantity);
+  if (!validName.isValid) return validName;
+  if (!validQuantity.isValid) return validQuantity;
+
+  const product = await Model.updateProduct(id, name, quantity);
+  const alreadyExists = await Model.findProductById(id);
+  if (!alreadyExists) {
+    return {
+      isValid: false,
+      err: {
+        code: 'invalid_data',
+        message: 'Wrong id format',
+      },
+    };
+  }
+
+  return product;
+};
+
 module.exports = {
   createProduct,
   findAllProducts,
   findProductById,
+  updateProduct,
 };
