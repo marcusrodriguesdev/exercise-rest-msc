@@ -1,7 +1,7 @@
 const Model = require('../models/products.models');
 const Middlewares = require('../middlewares/validation');
 
-const createProduct = async (id, name, quantity) => {
+const createProduct = async (name, quantity) => {
   const validName = Middlewares.validationName(name);
   const validQuantity = Middlewares.validationQuantity(quantity);
   if (!validName.isValid) return validName;
@@ -18,8 +18,8 @@ const createProduct = async (id, name, quantity) => {
     };
   }
 
-  const product = await Model.createProduct(id, name, quantity);
-  return product;
+  const product = await Model.createProduct(name, quantity);
+  return { id: product.id, ...product };
 };
 
 module.exports = {
