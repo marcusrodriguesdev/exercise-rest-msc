@@ -9,13 +9,7 @@ const createProduct = async (name, quantity) => {
 
   const alreadyExists = await Model.findByName(name);
   if (alreadyExists) {
-    return {
-      isValid: false,
-      err: {
-        code: 'invalid_data',
-        message: 'Product aleready exists',
-      },
-    };
+    return { err: { code: 'invalid_data', message: 'Product aleready exists' } };
   }
 
   const product = await Model.createProduct(name, quantity);
@@ -31,15 +25,7 @@ const findAllProducts = async () => {
 const findProductById = async (id) => {
   const product = await Model.findProductById(id);
 
-  if (!product) {
-    return {
-      isValid: false,
-      err: {
-        code: 'invalid_data',
-        message: 'Wrong id format',
-      },
-    };
-  }
+  if (!product) return { err: { code: 'invalid_data', message: 'Wrong id format' } };
 
   return product;
 };
@@ -50,17 +36,10 @@ const updateProduct = async (id, name, quantity) => {
   if (!validName.isValid) return validName;
   if (!validQuantity.isValid) return validQuantity;
 
-  const product = await Model.updateProduct(id, name, quantity);
   const alreadyExists = await Model.findProductById(id);
-  if (!alreadyExists) {
-    return {
-      isValid: false,
-      err: {
-        code: 'invalid_data',
-        message: 'Wrong id format',
-      },
-    };
-  }
+  if (!alreadyExists) return { err: { code: 'invalid_data', message: 'Wrong id format' } };
+
+  const product = await Model.updateProduct(id, name, quantity);
 
   return product;
 };
