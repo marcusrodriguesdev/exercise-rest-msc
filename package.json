@@ -2,10 +2,10 @@
   "name": "exercise-rest-msc",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./src/api/app.js",
   "scripts": {
-    "dev": "nodemon index.js",
-    "start": "node index.js"
+    "dev": "nodemon .",
+    "start": "node ."
   },
   "keywords": [],
   "author": "",

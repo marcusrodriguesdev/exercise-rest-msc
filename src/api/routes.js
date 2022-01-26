@@ -6,9 +6,9 @@ const {
 
 const router = express.Router();
 
-router.post('/products', createProduct);
-router.get('/products', findAllProducts);
-router.get('/products/:id', findProductById);
-router.put('/products/:id', updateProduct);
+router.post('/', createProduct);
+router.get('/', findAllProducts);
+router.get('/:id', findProductById);
+router.put('/:id', updateProduct);
 
 module.exports = router;
