@@ -97,3 +97,79 @@ describe('1 - Crie um endpoint para o cadastro de produtos', () => {
     expect(quantity).toEqual(5);
   });
 });
+
+describe('2 - Crie um endpoint para listar os produtos', () => {
+  let connection;
+  let db;
+
+  beforeAll(async () => {
+    connection = await MongoClient.connect(mongoDbUrl, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    db = connection.db('StoreManager');
+    await db.collection('products').deleteMany({});
+  });
+
+  beforeEach(async () => {
+    await db.collection('products').deleteMany({});
+    await db.collection('sales').deleteMany({});
+    const products = [{ name: 'Martelo de Thor', quantity: 10 },
+      { name: 'Escudo do Capitão América', quantity: 30 }];
+    await db.collection('products').insertMany(products);
+  });
+
+  afterEach(async () => {
+    await db.collection('products').deleteMany({});
+  });
+
+  afterAll(async () => {
+    await connection.close();
+  });
+
+  it('Será validado que todos produtos estão sendo retornados', async () => {
+    const res = await request(server)
+      .get('/products');
+    const { body: { products } } = res;
+    console.log(products[0].name);
+    expect(products[0].name).toBe('Martelo de Thor');
+    expect(products[0].quantity).toBe(10);
+    expect(products[1].name).toBe('Escudo do Capitão América');
+    expect(products[1].quantity).toBe(30);
+  });
+
+  it('Será validado que é possível listar um determinado produto', async () => {
+    let result;
+
+    await request(server)
+      .post('/products')
+      .send({
+        name: 'Escudo do capitão america',
+        quantity: 3,
+      })
+      .then((response) => {
+        result = response.body;
+      });
+
+    const res = await request(server)
+      .get(`/products/${result._id}`);
+
+    expect(res.statusCode).toEqual(200);
+    expect(res.body._id).toBe(result._id);
+    expect(res.body.name).toBe('Escudo do capitão america');
+    expect(res.body.quantity).toBe(3);
+  });
+
+  it('Será validado que não é possível listar um produto que não existe', async () => {
+    const res = await request(server)
+      .get('/products/9999');
+
+    expect(res.statusCode).toEqual(422);
+    expect(res.body).toEqual({
+      err: {
+        code: 'invalid_data',
+        message: 'Wrong id format',
+      },
+    });
+  });
+});
