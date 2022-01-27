@@ -8,4 +8,5 @@
    - NodeJs
    - Express
    - MongoDb
+   - Jest
    - Eslint
