@@ -4,7 +4,7 @@ const validationName = (name) => {
       isValid: false,
       err: {
         code: 'invalid_data',
-        message: '"name", length must be at least 5 characters long',
+        message: '"name" length must be at least 5 characters long',
       },
     };
   }
@@ -17,7 +17,7 @@ const validationQuantity = (quantity) => {
       isValid: false,
       err: {
         code: 'invalid_data',
-        message: '"quantity", must be larger than or equal to 1',
+        message: '"quantity" must be larger than or equal to 1',
       },
     };
   }
@@ -27,7 +27,7 @@ const validationQuantity = (quantity) => {
       isValid: false,
       err: {
         code: 'invalid_data',
-        message: '"quantity", must be a number',
+        message: '"quantity" must be a number',
       },
     };
   }

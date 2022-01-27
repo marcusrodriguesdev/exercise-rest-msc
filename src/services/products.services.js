@@ -9,7 +9,7 @@ const createProduct = async (name, quantity) => {
 
   const alreadyExists = await Model.findByName(name);
   if (alreadyExists) {
-    return { err: { code: 'invalid_data', message: 'Product aleready exists' } };
+    return { err: { code: 'invalid_data', message: 'Product already exists' } };
   }
 
   const product = await Model.createProduct(name, quantity);
