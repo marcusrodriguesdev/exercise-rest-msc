@@ -12,8 +12,8 @@ const createProduct = async (name, quantity) => {
     return { err: { code: 'invalid_data', message: 'Product already exists' } };
   }
 
-  const product = await Model.createProduct(name, quantity);
-  return { id: product.id, ...product };
+  const { insertedId } = await Model.createProduct(name, quantity);
+  return { _id: insertedId, name, quantity };
 };
 
 const findAllProducts = async () => {

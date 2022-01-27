@@ -3,7 +3,6 @@ const { MongoClient } = require('mongodb');
 const server = require('../src/api/server');
 
 const mongoDbUrl = `mongodb://${'localhost' || 'mongodb'}:27017/StoreManager`;
-// const invalidId = 99999;
 
 describe('1 - Crie um endpoint para o cadastro de produtos', () => {
   let connection;
@@ -91,9 +90,8 @@ describe('1 - Crie um endpoint para o cadastro de produtos', () => {
         name: 'Produto',
         quantity: 5,
       });
-    console.log(res.body);
-    expect(res.statusCode).toEqual(201);
     const { name, quantity } = res.body;
+    expect(res.statusCode).toEqual(201);
     expect(res.body).toHaveProperty('_id');
     expect(name).toEqual('Produto');
     expect(quantity).toEqual(5);
