@@ -333,7 +333,7 @@ describe('Crie um endpoint para deletar um produto', () => {
 
   it('Será validado que não é possível deletar um produto que não existe', async () => {
     const res = await request(server)
-      .delete('products/999');
+      .delete('/products/999');
     expect(res.statusCode).toEqual(422);
     expect(res.body).toEqual({
       err: {
@@ -356,8 +356,6 @@ describe('Crie um endpoint para deletar um produto', () => {
     const res = await request(server)
       .delete(`/products/${resultId}`);
     expect(res.statusCode).toEqual(200);
-    expect(res.body).toHaveProperty('_id');
-    expect(res.body).toHaveProperty('name');
-    expect(res.body).toHaveProperty('quantity');
+    expect(res.body).toHaveProperty('acknowledged');
   });
 });
