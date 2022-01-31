@@ -39,9 +39,9 @@ const updateProduct = async (id, name, quantity) => {
   const alreadyExists = await Model.findProductById(id);
   if (!alreadyExists) return { err: { code: 'invalid_data', message: 'Wrong id format' } };
 
-  const product = await Model.updateProduct(id, name, quantity);
+  await Model.updateProduct(id, name, quantity);
 
-  return product;
+  return { _id: id, name, quantity };
 };
 
 module.exports = {

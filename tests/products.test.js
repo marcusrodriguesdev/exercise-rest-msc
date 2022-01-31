@@ -173,3 +173,131 @@ describe('2 - Crie um endpoint para listar os produtos', () => {
     });
   });
 });
+
+describe('3 - Crie um endpoint para atualizar um produto', () => {
+  let connection;
+  let db;
+
+  beforeAll(async () => {
+    connection = await MongoClient.connect(mongoDbUrl, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    db = connection.db('StoreManager');
+    await db.collection('products').deleteMany({});
+  });
+
+  beforeEach(async () => {
+    await db.collection('products').deleteMany({});
+    await db.collection('sales').deleteMany({});
+    const products = [{ name: 'Martelo de Thor', quantity: 10 },
+      { name: 'Escudo do Capitão América', quantity: 30 }];
+    await db.collection('products').insertMany(products);
+  });
+
+  afterEach(async () => {
+    await db.collection('products').deleteMany({});
+  });
+
+  afterAll(async () => {
+    await connection.close();
+  });
+
+  it('Será validado que não é possível atualizar um produto com o nome menor que 5 caracteres', async () => {
+    let resultId;
+
+    await request(server)
+      .get('/products')
+      .then((response) => {
+        const { body: { products } } = response;
+        resultId = products[0]._id;
+      });
+
+    const res = await request(server)
+      .put(`/products/${resultId}`)
+      .send({
+        name: 'Mar',
+        quantity: 10,
+      });
+
+    expect(res.statusCode).toEqual(422);
+    expect(res.body).toEqual({
+      err: {
+        code: 'invalid_data',
+        message: '"name" length must be at least 5 characters long',
+      },
+    });
+  });
+
+  it('Será validado que não é possível atualizar um produto com quantidade menor ou igual a zero', async () => {
+    let resultId;
+
+    await request(server)
+      .get('/products')
+      .then((response) => {
+        const { body: { products } } = response;
+        resultId = products[0]._id;
+      });
+
+    const res = await request(server)
+      .put(`/products/${resultId}`)
+      .send({
+        name: 'Martelo',
+        quantity: -2,
+      });
+
+    expect(res.statusCode).toEqual(422);
+    expect(res.body).toEqual({
+      err: {
+        code: 'invalid_data',
+        message: '"quantity" must be larger than or equal to 1',
+      },
+    });
+  });
+
+  it('Será validado que não é possível atualizar um produto com uma string no campo quantidade', async () => {
+    let resultId;
+
+    await request(server)
+      .get('/products')
+      .then((response) => {
+        const { body: { products } } = response;
+        resultId = products[0]._id;
+      });
+    const res = await request(server)
+      .put(`/products/${resultId}`)
+      .send({
+        name: 'Martelo',
+        quantity: 'Valor',
+      });
+    expect(res.statusCode).toEqual(422);
+    expect(res.body).toEqual({
+      err: {
+        code: 'invalid_data',
+        message: '"quantity" must be a number',
+      },
+    });
+  });
+
+  it('Será validado que é possível atualizar um produto com sucesso', async () => {
+    let resultId;
+
+    await request(server)
+      .get('/products')
+      .then((response) => {
+        const { body: { products } } = response;
+        resultId = products[0]._id;
+      });
+    const res = await request(server)
+      .put(`/products/${resultId}`)
+      .send({
+        name: 'Produto Aleatorio',
+        quantity: 10,
+      });
+    console.log(res.body);
+    expect(res.statusCode).toEqual(200);
+    expect(res.body).toHaveProperty('_id');
+    expect(res.body).toHaveProperty('name');
+    expect(res.body).toHaveProperty('quantity');
+  });
+});
