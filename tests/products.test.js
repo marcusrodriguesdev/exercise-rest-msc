@@ -301,3 +301,63 @@ describe('3 - Crie um endpoint para atualizar um produto', () => {
     expect(res.body).toHaveProperty('quantity');
   });
 });
+
+describe('Crie um endpoint para deletar um produto', () => {
+  let connection;
+  let db;
+
+  beforeAll(async () => {
+    connection = await MongoClient.connect(mongoDbUrl, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    db = connection.db('StoreManager');
+    await db.collection('products').deleteMany({});
+  });
+
+  beforeEach(async () => {
+    await db.collection('products').deleteMany({});
+    await db.collection('sales').deleteMany({});
+    const products = [{ name: 'Martelo de Thor', quantity: 10 },
+      { name: 'Escudo do Capitão América', quantity: 30 }];
+    await db.collection('products').insertMany(products);
+  });
+
+  afterEach(async () => {
+    await db.collection('products').deleteMany({});
+  });
+
+  afterAll(async () => {
+    await connection.close();
+  });
+
+  it('Será validado que não é possível deletar um produto que não existe', async () => {
+    const res = await request(server)
+      .delete('products/999');
+    expect(res.statusCode).toEqual(422);
+    expect(res.body).toEqual({
+      err: {
+        code: 'invalid_data',
+        message: 'Wrong id format',
+      },
+    });
+  });
+
+  it('Será validado que é possível deletar um produto com sucesso', async () => {
+    let resultId;
+
+    await request(server)
+      .get('/products')
+      .then((response) => {
+        const { body: { products } } = response;
+        resultId = products[0]._id;
+      });
+
+    const res = await request(server)
+      .delete(`/products/${resultId}`);
+    expect(res.statusCode).toEqual(200);
+    expect(res.body).toHaveProperty('_id');
+    expect(res.body).toHaveProperty('name');
+    expect(res.body).toHaveProperty('quantity');
+  });
+});
