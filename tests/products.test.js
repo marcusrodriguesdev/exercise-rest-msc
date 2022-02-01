@@ -1,8 +1,9 @@
 const request = require('supertest');
+require('dotenv').config();
 const { MongoClient } = require('mongodb');
 const server = require('../src/api/server');
 
-const mongoDbUrl = `mongodb://${'localhost' || 'mongodb'}:27017/StoreManager`;
+const mongoDbUrl = `mongodb://${process.env.HOST || 'mongodb'}:27017/StoreManager`;
 
 describe('1 - Crie um endpoint para o cadastro de produtos', () => {
   let connection;
@@ -131,7 +132,6 @@ describe('2 - Crie um endpoint para listar os produtos', () => {
     const res = await request(server)
       .get('/products');
     const { body: { products } } = res;
-    console.log(products[0].name);
     expect(products[0].name).toBe('Martelo de Thor');
     expect(products[0].quantity).toBe(10);
     expect(products[1].name).toBe('Escudo do Capitão América');
@@ -294,7 +294,6 @@ describe('3 - Crie um endpoint para atualizar um produto', () => {
         name: 'Produto Aleatorio',
         quantity: 10,
       });
-    console.log(res.body);
     expect(res.statusCode).toEqual(200);
     expect(res.body).toHaveProperty('_id');
     expect(res.body).toHaveProperty('name');
